@@ -12,3 +12,6 @@ class Particle:
 
         # Force from other particles will be recorded
         self.force = [0., 0.]
+
+        # Last position
+        self.position_last = self.position

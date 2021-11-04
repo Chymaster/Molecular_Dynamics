@@ -6,6 +6,11 @@ class Simulated_System:
     def __init__(self, lx=20, rho=0.1, sigma=1, T=0.1):
 
         self.sigma = sigma
+
+        self.size = lx
+
+        self.t = 0
+
         # Calculate number of particles
         number_of_particles = int((lx**2)*rho)
 
@@ -21,7 +26,6 @@ class Simulated_System:
 
         def random_position():
             return np.random.random(size=2)*lx
-
         # Generating positions
         for i in range(number_of_particles):
             suggested_position = random_position()
@@ -45,40 +49,71 @@ class Simulated_System:
             self.Particles.append(Particle(positions[i], velocities[i], i))
 
     # Mapping the Particles in grid
-    def map(self):
+    def map(self, particles=None, neighbours=None):
+        if particles is None:
+            particles = self.Particles
         import matplotlib.pyplot as plt
-        plt.scatter(*np.array([i.position for i in self.Particles]).T)
+        plt.scatter(*np.array([i.position for i in particles]).T, color="red")
+        if neighbours is not None:
+            plt.scatter(
+                *np.array([i.position for i in neighbours]).T, color="blue")
+            plt.scatter(
+                *np.array([i.position for i in self.Particles]).T, color="green", alpha=0.3)
+
+        plt.xlim([0, self.size])
+        plt.ylim([0, self.size])
         plt.show()
 
+    # Distance between two particles, with boundary condition applied
+    def dist(self, particle1, particle2):
+        r = np.linalg.norm(particle1.position - particle2.position)
+        r_boundary_x = np.linalg.norm(
+            abs(particle1.position - particle2.position) - np.array([self.size, 0]))
+        r_boundary_y = np.linalg.norm(
+            abs(particle1.position - particle2.position) - np.array([0, self.size]))
+        r_boundary_xy = np.linalg.norm(
+            abs(particle1.position - particle2.position) - np.array([self.size, self.size]))
+        return min(r, r_boundary_x, r_boundary_y, r_boundary_xy)
+
     # Energy of each particle calculating
-    def update_force(self, particle_instance, epsilon=1, alpha=0, r_cut=2.5):
+
+    def update_force(self, target_particle, epsilon=1, alpha=0, r_cut=2.5):
 
         # Neighbour list updating
         def update_neighbour_list():
-            particle_instance.neighbour_list = []
-            for particles in self.Particles:
-                if np.linalg.norm(particle_instance.position
-                                  - particles.position) < r_cut and particle_instance.serial != particles.serial:
-                    particle_instance.neighbour_list.append(particles)
+            target_particle.neighbour_list = []
+            for other_particles in self.Particles:
+                if self.dist(target_particle, other_particles) < r_cut and target_particle.serial != other_particles.serial:
+                    target_particle.neighbour_list.append(other_particles)
 
         # Calculate force according to LJ
         def calc_force(neighbours):
             sigma = self.sigma
-            r = np.linalg.norm(neighbours.position-particle_instance.position)
+            r = np.linalg.norm(neighbours.position-target_particle.position)
             force = 4*epsilon * (((sigma**12)/(12*(r**13)))
                                  - alpha*(sigma**6)/(6*(r**7)))
-            r_hat = (neighbours.position-particle_instance.position)/r
+            r_hat = (neighbours.position-target_particle.position)/r
             force = force*r_hat
             return force
 
         update_neighbour_list()
-        print(particle_instance.position)
-        print([i.position for i in particle_instance.neighbour_list])
 
         # Calculating forces and assigning them to particle instance
-        for neighbours in particle_instance.neighbour_list:
-            particle_instance.force += calc_force(neighbours)
+        for neighbours in target_particle.neighbour_list:
+            target_particle.force += calc_force(neighbours)
 
 
 ###############################################################################
-# Region of testing
+# Region of testing #
+###############################################################################
+
+    def move(self, dt, m=1):
+        for particle in self.Particles:
+            self.update_force(particle)
+            particle.position_last = particle.position
+            # Position change
+            particle.position = 2*particle.position - \
+                particle.position_last + particle.force*(dt**2)/m
+            # Velocity change
+            particle.velocity = (particle.position
+                                 - particle.position_last) / 2*dt

@@ -1,0 +1,22 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from MD_System_Class import Simulated_System as md
+
+
+# Initialise MD system:
+simulation = md(lx=20, rho=0.5, sigma=1, T=0.1)
+
+# Calculate force for each particle instances
+"""for i in range(len(simulation.Particles)):
+    simulation.update_force(
+        simulation.Particles[i], epsilon=1, alpha=0, r_cut=2.5)"""
+
+simulation.update_force(
+    simulation.Particles[13], epsilon=1, alpha=0, r_cut=3.5)
+print(simulation.Particles[13].position, [
+      i.position for i in simulation.Particles[13].neighbour_list])
+simulation.map(particles=[simulation.Particles[13]],
+               neighbours=simulation.Particles[13].neighbour_list)
+
+# Map the particles in the grid
+#simulation.map()

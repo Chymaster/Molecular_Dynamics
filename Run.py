@@ -4,7 +4,7 @@ from MD_System_Class import Simulated_System as md
 
 
 # Initialise MD system:
-simulation = md(lx=5, rho=0.5, sigma=1, T=0.1)
+simulation = md(lx=10, rho=0.1, sigma=1, T=0.1)
 
 # Calculate force for each particle instances
 simulation.update_force(simulation.Particles[2], epsilon=1, alpha=1, r_cut=2.5)
@@ -17,5 +17,5 @@ plt.scatter(
 
 for i in range(1000):
     simulation.move(0.001, m=1)
-    print("force is", max(np.absolute([max(np.absolute(i.force))
-          for i in simulation.Particles])), "distance between two particle is", min(i.distance for i in simulation.Particles))
+    print("velocity is", max(np.absolute([max(np.absolute(i.velocity))
+                                          for i in simulation.Particles])), "distance between two particle is", min(i.distance for i in simulation.Particles))

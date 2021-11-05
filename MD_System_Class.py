@@ -66,15 +66,21 @@ class Simulated_System:
 
     # Distance between two particles, with boundary condition applied
     def dist(self, particle1, particle2):
-        r = np.linalg.norm(particle1.position - particle2.position)
-        r_boundary_x = np.linalg.norm(
-            abs(particle1.position - particle2.position) - np.array([self.size, 0]))
-        r_boundary_y = np.linalg.norm(
-            abs(particle1.position - particle2.position) - np.array([0, self.size]))
-        r_boundary_xy = np.linalg.norm(
-            abs(particle1.position - particle2.position) - np.array([self.size, self.size]))
-        return min(r, r_boundary_x, r_boundary_y, r_boundary_xy)
 
+        return np.linalg.norm(self.p_diff(particle1, particle2))
+
+    def p_diff(self, t_particle, o_particle):
+        r = np.array([0., 0.])
+
+        r[0] = t_particle.position[0] - o_particle.position[0]
+        if abs(-t_particle.position[0] + o_particle.position[0] + self.size) < abs(r[0]):
+            r[0] = (-t_particle.position[0]
+                    + o_particle.position[0] + self.size)
+        r[1] = t_particle.position[1] - o_particle.position[1]
+        if abs(-t_particle.position[1] + o_particle.position[1] + self.size) < abs(r[1]):
+            r[1] = (-t_particle.position[1]
+                    + o_particle.position[1] + self.size)
+        return r
     # Energy of each particle calculating
 
     def update_force(self, target_particle, epsilon=1, alpha=0, r_cut=2.5):
@@ -92,13 +98,15 @@ class Simulated_System:
         # Calculate force according to LJ
 
         def calc_force(neighbours):
+            change_in_position = self.p_diff(neighbours, target_particle)
             sigma = self.sigma
             r = self.dist(neighbours, target_particle)
-            force = - 24*epsilon * (2*((sigma**12)/(r**13))
-                                    - alpha*(sigma**6)/(r**7))
-            r_hat = (neighbours.position-target_particle.position) / \
-                np.sqrt(np.sum((neighbours.position-target_particle.position)**2))
+            force = (- 24*epsilon * (2*((sigma**12)/(r**13))
+                                     - alpha*(sigma**6)/(r**7)))
+            r_hat = change_in_position / \
+                np.sqrt(np.sum((change_in_position)**2))
             force = force*r_hat
+
             """Test"""
             target_particle.distance = min(
                 abs(r), abs(target_particle.distance))
@@ -109,6 +117,7 @@ class Simulated_System:
         update_neighbour_list()
 
         # Calculating forces and assigning them to particle instance
+        target_particle.force = np.array([0., 0.])
         for neighbours in target_particle.neighbour_list:
             target_particle.force += calc_force(neighbours)
 
@@ -117,35 +126,30 @@ class Simulated_System:
 # Region of testing #
 ###############################################################################
 
-
     def move(self, dt, m=1):
         for particle in self.Particles:
-            """test"""
-            # Periodic boundary condition
-            while particle.position[0] < 0:
-                particle.position[0] += self.size
-            while particle.position[1] < 0:
-                particle.position[1] += self.size
-            while particle.position[0] > self.size:
-                particle.position[0] -= self.size
-            while particle.position[1] > self.size:
-                particle.position[1] -= self.size
-            """/test"""
 
             self.update_force(particle)
             # Position change
+            """Test"""
             if np.linalg.norm(particle.position_last) > self.size**2:
                 print("last position before moving = ", particle.position_last)
+            """/Test"""
             particle.position = 2*particle.position - \
                 particle.position_last + particle.force*(dt**2)/m
+
+            """Test"""
+            #print("pisition change", particle.position - particle.position_last)
+            """/Test"""
+
             # Velocity change
             particle.velocity = (particle.position
                                  - particle.position_last) / 2*dt
-            if np.linalg.norm(particle.velocity) > 2:
+            """if np.linalg.norm(particle.velocity) > 2:
                 print("current position = ", particle.position)
                 print("force=", particle.force)
                 print("last position = ", particle.position_last)
-                print("velocity=", particle.velocity)
+                print("velocity=", particle.velocity)"""
             # Periodic boundary condition
             while particle.position[0] < 0:
                 particle.position[0] += self.size

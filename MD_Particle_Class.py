@@ -14,7 +14,7 @@ class Particle:
         self.force = np.array([0., 0.])
 
         # Last position
-        self.position_last = self.position + self.velocity*0.01
+        self.position_last = self.position + self.velocity*0.1
 
 ################################################################################
 # Region of test

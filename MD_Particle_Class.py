@@ -11,7 +11,12 @@ class Particle:
         self.neighbour_list = []
 
         # Force from other particles will be recorded
-        self.force = [0., 0.]
+        self.force = np.array([0., 0.])
 
         # Last position
-        self.position_last = self.position
+        self.position_last = self.position + self.velocity*0.01
+
+################################################################################
+# Region of test
+################################################################################
+        self.distance = 5.

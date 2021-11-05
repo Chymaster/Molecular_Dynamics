@@ -37,7 +37,7 @@ class Simulated_System:
         velocities = np.random.random((number_of_particles, 2))
         vx_average = np.average(velocities.T[0])
         vy_average = np.average(velocities.T[1])
-        v_average_squared = np.average(np.reshape(velocities, -1))**2
+        v_average_squared = np.average(np.reshape(velocities, -1)**2)
         fs = np.sqrt(3*T/v_average_squared)
         for i in range(len(velocities)):
             velocities[i] = [(velocities[i][0]-vx_average)*fs,
@@ -85,15 +85,25 @@ class Simulated_System:
             for other_particles in self.Particles:
                 if self.dist(target_particle, other_particles) < r_cut and target_particle.serial != other_particles.serial:
                     target_particle.neighbour_list.append(other_particles)
-
+                    """# Making sure particles don't overlap
+                    while self.dist(target_particle, other_particles) <= 0.4:
+                        other_particles.position += (
+                            other_particles.position - target_particle.position)"""
         # Calculate force according to LJ
+
         def calc_force(neighbours):
             sigma = self.sigma
-            r = np.linalg.norm(neighbours.position-target_particle.position)
-            force = 4*epsilon * (((sigma**12)/(12*(r**13)))
-                                 - alpha*(sigma**6)/(6*(r**7)))
-            r_hat = (neighbours.position-target_particle.position)/r
+            r = self.dist(neighbours, target_particle)
+            force = - 24*epsilon * (2*((sigma**12)/(r**13))
+                                    - alpha*(sigma**6)/(r**7))
+            r_hat = (neighbours.position-target_particle.position) / \
+                np.sqrt(np.sum((neighbours.position-target_particle.position)**2))
             force = force*r_hat
+            """Test"""
+            target_particle.distance = min(
+                abs(r), abs(target_particle.distance))
+            """/Test"""
+
             return force
 
         update_neighbour_list()
@@ -107,13 +117,44 @@ class Simulated_System:
 # Region of testing #
 ###############################################################################
 
+
     def move(self, dt, m=1):
         for particle in self.Particles:
+            """test"""
+            # Periodic boundary condition
+            while particle.position[0] < 0:
+                particle.position[0] += self.size
+            while particle.position[1] < 0:
+                particle.position[1] += self.size
+            while particle.position[0] > self.size:
+                particle.position[0] -= self.size
+            while particle.position[1] > self.size:
+                particle.position[1] -= self.size
+            """/test"""
+
             self.update_force(particle)
-            particle.position_last = particle.position
             # Position change
+            if np.linalg.norm(particle.position_last) > self.size**2:
+                print("last position before moving = ", particle.position_last)
             particle.position = 2*particle.position - \
                 particle.position_last + particle.force*(dt**2)/m
             # Velocity change
             particle.velocity = (particle.position
                                  - particle.position_last) / 2*dt
+            if np.linalg.norm(particle.velocity) > 2:
+                print("current position = ", particle.position)
+                print("force=", particle.force)
+                print("last position = ", particle.position_last)
+                print("velocity=", particle.velocity)
+            # Periodic boundary condition
+            while particle.position[0] < 0:
+                particle.position[0] += self.size
+            while particle.position[1] < 0:
+                particle.position[1] += self.size
+            while particle.position[0] > self.size:
+                particle.position[0] -= self.size
+            while particle.position[1] > self.size:
+                particle.position[1] -= self.size
+
+            # Update last position
+            particle.position_last = particle.position

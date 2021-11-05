@@ -66,11 +66,13 @@ class Simulated_System:
 
     # Distance between two particles, with boundary condition applied
     def dist(self, t_particle, o_particle):
-        if max(self.p_diff(t_particle, o_particle)) > 5.:
+        """test"""
+        """if max(self.p_diff(t_particle, o_particle)) > 5.:
             print("t", t_particle.position, "o", o_particle.position)
             print("r", self.p_diff(t_particle, o_particle))
             print("distance", np.linalg.norm(
-                self.p_diff(t_particle, o_particle)))
+                self.p_diff(t_particle, o_particle)))"""
+        """test"""
         return np.linalg.norm(self.p_diff(t_particle, o_particle))
 
     def p_diff(self, t_particle, o_particle):
@@ -94,34 +96,55 @@ class Simulated_System:
             for other_particles in self.Particles:
                 if self.dist(target_particle, other_particles) < r_cut and target_particle.serial != other_particles.serial:
                     target_particle.neighbour_list.append(other_particles)
-                    """# Making sure particles don't overlap
+                    """test""" """this is CHEATING!!!"""
+                    # Making sure particles don't overlap
                     while self.dist(target_particle, other_particles) <= 0.4:
                         other_particles.position += (
-                            other_particles.position - target_particle.position)"""
+                            other_particles.position - target_particle.position)
+                    """test"""
         # Calculate force according to LJ
 
         def calc_force(neighbours):
-            change_in_position = self.p_diff(neighbours, target_particle)
+            change_in_position = self.p_diff(target_particle, neighbours)
             sigma = self.sigma
             r = self.dist(neighbours, target_particle)
-            force = ((-1)*24*epsilon * (2*((sigma**12)/(r**13))
-                                        - alpha*(sigma**6)/(r**7)))
+            twelve_term = 2*(sigma**12) / (r**13)
+            six_term = alpha/(r**7)
+
+            force = (-1) * 24 * epsilon * (twelve_term - six_term)
             r_hat = change_in_position / \
                 np.sqrt(np.sum((change_in_position)**2))
-            force = force*r_hat
+            force_vector = force*r_hat
 
-            """Test"""
-            target_particle.distance = min(
-                abs(r), abs(target_particle.distance))
-            """/Test"""
+            """test"""
+            # Checking force calculation
+            """if np.linalg.norm(force) > 100000:
+                print("epsilon=", epsilon, "twelve_term",
+                      twelve_term, "six_term", six_term)
+                print("target position", target_particle.position)
+                print("neighbours position", neighbours.position)
+                print("r", r)
+                print("force_vector", force_vector)
+                print("change_in_position", change_in_position)
+                quit()"""
 
-            return force
+            return force_vector
 
         update_neighbour_list()
 
         # Calculating forces and assigning them to particle instance
         target_particle.force = np.array([0., 0.])
         for neighbours in target_particle.neighbour_list:
+            """test"""
+            """if np.linalg.norm(calc_force(neighbours)) > 10:
+                print("force", calc_force(neighbours))
+                print("target particle position", target_particle.position)
+                print("neighhbours", neighbours.position)
+                print("distance", np.linalg.norm(
+                    neighbours.position - target_particle.position))
+                quit()"""
+            """test"""
+
             target_particle.force += calc_force(neighbours)
 
 
@@ -129,14 +152,25 @@ class Simulated_System:
 # Region of testing #
 ###############################################################################
 
-    def move(self, dt, m=1):
+    def move(self, dt, m=1, alpha=0):
         for particle in self.Particles:
 
-            self.update_force(particle)
+            self.update_force(particle, alpha=alpha)
+
             """Test"""
-            # If the last position is too large
-            if np.linalg.norm(particle.position_last) > self.size**2:
-                print("last position before moving = ", particle.position_last)
+            """# If the last position is too large
+            if np.linalg.norm(particle.force) > 10:
+                print("current position = ", particle.position)
+                print("force=", particle.force)
+                print("last position = ", particle.position_last)
+                print("velocity=", particle.velocity)
+                print("neighbours", [
+                      i.position for i in particle.neighbour_list])
+                print("distance between neighbours", [np.linalg.norm(
+                    i.position - particle.position_last) for i in particle.neighbour_list])
+                self.map(particles=[particle],
+                         neighbours=particle.neighbour_list)
+                quit()"""
             """/Test"""
 
             # Set current position
@@ -151,7 +185,7 @@ class Simulated_System:
             particle.velocity = (particle.position
                                  - particle.position_last) / 2*dt
             """test"""
-            """if np.linalg.norm(particle.force) > 10:
+            """if np.linalg.norm(particle.velocity) > 10:
                 print("current position = ", particle.position)
                 print("force=", particle.force)
                 print("last position = ", particle.position_last)

@@ -11,11 +11,8 @@ simulation.update_force(simulation.Particles[2], epsilon=1, alpha=1, r_cut=2.5)
 
 # Map the particles in the grid
 
-plt.figure(1)
-plt.scatter(
-    *np.array([i.position for i in simulation.Particles]).T, color="blue")
 
 for i in range(1000):
-    simulation.move(0.001, m=1)
-    print("velocity is", max(np.absolute([max(np.absolute(i.velocity))
-                                          for i in simulation.Particles])), "distance between two particle is", min(i.distance for i in simulation.Particles))
+    simulation.move(0.001, m=1, alpha=1)
+    print("largest force is", max(np.absolute([max(np.absolute(i.force))
+                                               for i in simulation.Particles])), "distance between two particle is", min(i.distance for i in simulation.Particles))

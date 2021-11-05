@@ -12,11 +12,11 @@ simulation = md(lx=10, rho=0.7, sigma=1, T=0.1)
         simulation.Particles[i], epsilon=1, alpha=0, r_cut=2.5)"""
 
 simulation.update_force(
-    simulation.Particles[13], epsilon=1, alpha=0, r_cut=3.5)
-print(simulation.Particles[13].position, [
-      i.position for i in simulation.Particles[13].neighbour_list])
-simulation.map(particles=[simulation.Particles[13]],
-               neighbours=simulation.Particles[13].neighbour_list)
+    simulation.Particles[2], epsilon=1, alpha=0, r_cut=2.5)
+print(simulation.Particles[2].position, [
+      i.position for i in simulation.Particles[2].neighbour_list])
+simulation.map(particles=[simulation.Particles[2]],
+               neighbours=simulation.Particles[2].neighbour_list)
 
 # Map the particles in the grid
 #simulation.map()

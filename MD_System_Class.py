@@ -234,7 +234,7 @@ class Simulated_System:
 
             # Update kinetic Energy
             self.kinetic_E = 0.5 * m * \
-                sum((i.velocity)**2 for i in self.Particles)
+                sum((np.linalg.norm(i.velocity))**2 for i in self.Particles)
 
             # Update total Energy
             self.E = self.potential_E + self.kinetic_E
@@ -244,10 +244,10 @@ class Simulated_System:
             self.T = self.kinetic_E / (self.N * kb)
 
             # Logging
-            if log_file is not "":
+            if log_file is not "" and int(self.t / self.dt) % int(1/f_log) == 0:
                 log = open(log_file, "a")
-                log.write("".join(str(i) for i in [self.t, self.T, self.kinetic_E,
-                          self.potential_E, self.E]))
+                log.write("".join(str(i)+" " for i in [self.t, self.T, self.kinetic_E,
+                          self.potential_E, self.E, "\n"]))
                 log.close()
 
 ###############################################################################

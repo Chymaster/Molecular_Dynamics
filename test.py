@@ -20,7 +20,7 @@ plt.ylim(0, simulation.size)
 
 
 def animate(i):
-    simulation.move(m=1, log_file="log_test.txt")
+    simulation.move(m=1, log_file="log_test.txt", f_log=0.01)
     sc.set_offsets(np.array([i.position for i in simulation.Particles]))
     return sc
 

@@ -3,7 +3,7 @@ from MD_Particle_Class import Particle
 
 
 class Simulated_System:
-    def __init__(self, lx=20, rho=0.1, sigma=1, T=0.1):
+    def __init__(self, lx=20, rho=0.1, sigma=1, T=0.1, dt=0.01):
 
         self.sigma = sigma
 
@@ -11,8 +11,19 @@ class Simulated_System:
 
         self.t = 0
 
+        self.dt = dt
+
+        self.potential_E = 0.
+
+        self.kinetic_E = 0.
+
+        self.E = 0.
+
+        self.T = T
+
         # Calculate number of particles
         number_of_particles = int((lx**2)*rho)
+        self.N = number_of_particles
 
         # Generate position lists:
         positions = []
@@ -46,7 +57,7 @@ class Simulated_System:
         # Create particle instances
         self.Particles = []
         for i in range(number_of_particles):
-            self.Particles.append(Particle(positions[i], velocities[i], i))
+            self.Particles.append(Particle(positions[i], velocities[i], i, dt))
 
     # Mapping the Particles in grid
     def map(self, particles=None, neighbours=None):
@@ -98,7 +109,7 @@ class Simulated_System:
                     target_particle.neighbour_list.append(other_particles)
                     """test""" """this is CHEATING!!!"""
                     # Making sure particles don't overlap
-                    while self.dist(target_particle, other_particles) <= 0.4:
+                    while self.dist(target_particle, other_particles) <= 0.2:
                         other_particles.position += (
                             other_particles.position - target_particle.position)
                     """test"""
@@ -109,7 +120,7 @@ class Simulated_System:
             sigma = self.sigma
             r = self.dist(neighbours, target_particle)
             twelve_term = 2*(sigma**12) / (r**13)
-            six_term = alpha/(r**7)
+            six_term = alpha * (sigma**6)/(r**7)
 
             force = (-1) * 24 * epsilon * (twelve_term - six_term)
             r_hat = change_in_position / \
@@ -130,10 +141,21 @@ class Simulated_System:
 
             return force_vector
 
+        def calc_energy(neighbours):
+            change_in_position = self.p_diff(target_particle, neighbours)
+            sigma = self.sigma
+            r = self.dist(neighbours, target_particle)
+            twelve_term = (sigma * r)**12
+            six_term = alpha * (sigma * r)**7
+
+            energy = 4 * epsilon * (twelve_term - six_term)
+            return energy
+
         update_neighbour_list()
 
         # Calculating forces and assigning them to particle instance
         target_particle.force = np.array([0., 0.])
+        target_particle.energy = 0
         for neighbours in target_particle.neighbour_list:
             """test"""
             """if np.linalg.norm(calc_force(neighbours)) > 10:
@@ -146,13 +168,10 @@ class Simulated_System:
             """test"""
 
             target_particle.force += calc_force(neighbours)
+            target_particle.energy += calc_energy(neighbours)
 
-
-###############################################################################
-# Region of testing #
-###############################################################################
-
-    def move(self, dt, m=1, alpha=0):
+    def move(self, m=1, alpha=0, log_file="", f_log=0.0001):
+        dt = self.dt
         for particle in self.Particles:
 
             self.update_force(particle, alpha=alpha)
@@ -178,12 +197,13 @@ class Simulated_System:
             current_position = particle.position
 
             # Position change
-            particle.position = 2*particle.position - \
+            new_position = 2*particle.position - \
                 particle.position_last + particle.force*(dt**2)/m
 
+            particle.position = new_position
             # Velocity change
             particle.velocity = (particle.position
-                                 - particle.position_last) / 2*dt
+                                 - particle.position_last) / (2*dt)
             """test"""
             """if np.linalg.norm(particle.velocity) > 10:
                 print("current position = ", particle.position)
@@ -205,3 +225,31 @@ class Simulated_System:
 
             # Update last position
             particle.position_last = current_position
+
+            # Update time
+            self.t += dt
+
+            # Update potential energy
+            self.potential_E = sum(i.energy for i in self.Particles)
+
+            # Update kinetic Energy
+            self.kinetic_E = 0.5 * m * \
+                sum((i.velocity)**2 for i in self.Particles)
+
+            # Update total Energy
+            self.E = self.potential_E + self.kinetic_E
+
+            # Update Temperature
+            kb = 1.38e-23
+            self.T = self.kinetic_E / (self.N * kb)
+
+            # Logging
+            if log_file is not "":
+                log = open(log_file, "a")
+                log.write("".join(str(i) for i in [self.t, self.T, self.kinetic_E,
+                          self.potential_E, self.E]))
+                log.close()
+
+###############################################################################
+# Region of testing #
+###############################################################################

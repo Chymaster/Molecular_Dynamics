@@ -2,7 +2,7 @@ import numpy as np
 
 
 class Particle:
-    def __init__(self, position, velocity, serial):
+    def __init__(self, position, velocity, serial, dt):
         self.position = np.array(position)
         self.velocity = np.array(velocity)
         self.serial = serial
@@ -14,7 +14,10 @@ class Particle:
         self.force = np.array([0., 0.])
 
         # Last position
-        self.position_last = self.position + self.velocity*0.1
+        self.position_last = self.position + self.velocity*dt
+
+        # Potential Energy
+        self.energy = 0.
 
 ################################################################################
 # Region of test

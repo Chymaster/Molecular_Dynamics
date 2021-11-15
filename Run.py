@@ -4,7 +4,7 @@ from MD_System_Class import Simulated_System as md
 
 
 # Initialise MD system:
-simulation = md(lx=10, rho=0.1, sigma=1, T=0.1)
+simulation = md(lx=10, rho=0.2, sigma=0.5, T=5, dt=0.005)
 
 # Calculate force for each particle instances
 simulation.update_force(simulation.Particles[2], epsilon=1, alpha=1, r_cut=2.5)

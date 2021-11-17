@@ -41,4 +41,4 @@ ax4 = fig.add_subplot(224)
 ax4.title.set_text('Total energy')
 ax4.plot(total_energy)
 
-plt.show()
+plt.savefig('plts.png')

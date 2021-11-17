@@ -21,7 +21,7 @@ for i in range(N):
     potential_energy = simulation.potential_E
     total_energy = simulation.E
     simulation.move(m=1, alpha=0, log_file="", f_log=0.0001)
-    print("yes")
+    print("T", simulation.T, "kinetic_energy", simulation.kinetic_E, "potential_energy", simulation.potential_E, "total_energy", simulation.E)
 
 # Ploting Temperature, kinetic energy, potential energy and Total energy
 fig = plt.figure()

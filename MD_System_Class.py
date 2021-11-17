@@ -253,7 +253,7 @@ class Simulated_System:
 ###############################################################################
 # Region of testing #
 ###############################################################################
-    def gro_log(self, gro_file = "MD.gro", f_traj=0.01):
+    def gro_log(self, gro_file="MD.gro", f_traj=0.01):
         gro = open(gro_file)
         if int(self.t / self.dt) % int(1/f_traj) == 0:
             gro.write()

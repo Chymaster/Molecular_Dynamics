@@ -145,8 +145,8 @@ class Simulated_System:
             change_in_position = self.p_diff(target_particle, neighbours)
             sigma = self.sigma
             r = self.dist(neighbours, target_particle)
-            twelve_term = (sigma * r)**12
-            six_term = alpha * (sigma * r)**7
+            twelve_term = (sigma / r)**12
+            six_term = alpha * (sigma / r)**7
 
             energy = 4 * epsilon * (twelve_term - six_term)
             return energy
@@ -241,7 +241,7 @@ class Simulated_System:
 
             # Update Temperature
             kb = 1.38e-23
-            self.T = self.kinetic_E / (self.N * kb)
+            self.T = self.kinetic_E / (self.N)
 
             # Logging
             if log_file is not "" and int(self.t / self.dt) % int(1/f_log) == 0:

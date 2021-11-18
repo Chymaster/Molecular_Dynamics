@@ -8,7 +8,7 @@ simulation = md(lx=20, rho=0.1, sigma=0.5, T=5, dt=0.001)
 
 
 # Making N moves
-N = 100000
+N = 10000
 
 temperature = np.zeros(N)
 kinetic_energy = np.zeros(N)

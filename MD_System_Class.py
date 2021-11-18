@@ -3,7 +3,7 @@ from MD_Particle_Class import Particle
 
 
 class Simulated_System:
-    def __init__(self, lx=20, rho=0.1, sigma=1, T=0.1, dt=0.01):
+    def __init__(self, lx=20, rho=0.1, sigma=1, T=0.1, dt=0.01, r_cut=2.5):
 
         self.sigma = sigma
 
@@ -12,6 +12,8 @@ class Simulated_System:
         self.t = 0
 
         self.dt = dt
+
+        self.r_cut = r_cut
 
         self.potential_E = 0.
 
@@ -114,8 +116,8 @@ class Simulated_System:
         return r
 
 
-    def update_force(self, target_particle, epsilon=1, alpha=0, r_cut=2.5):
-
+    def update_force(self, target_particle, epsilon=1, alpha=1):
+        r_cut = self.r_cut
         # Neighbour list updating
         def update_neighbour_list():
             target_particle.neighbour_list = []
@@ -184,7 +186,7 @@ class Simulated_System:
             target_particle.force += calc_force(neighbours)
             target_particle.energy += calc_energy(neighbours)
 
-    def move(self, m=1, alpha=0, log_file="", f_log=0.0001):
+    def move(self, m=1, alpha=1, log_file="", f_log=0.0001):
         dt = self.dt
         for particle in self.Particles:
 
@@ -237,7 +239,7 @@ class Simulated_System:
 
             # Velocity change
             particle.velocity = self.p_diff_coord(particle.position, particle.position_last)/ (2*dt)
-            
+
             # Update last position
             particle.position_last = current_position
 

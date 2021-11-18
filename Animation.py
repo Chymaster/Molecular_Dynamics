@@ -6,11 +6,11 @@ from MD_System_Class import Simulated_System as md
 
 
 # Initialise MD system:
-simulation = md(lx=20, rho=0.1, sigma=0.5, T=5, dt=0.001)
+simulation = md(lx=20, rho=0.05, sigma=1, T=5, dt=0.001, r_cut=2.5)
 
 # Calculate force for each particle instances
 simulation.update_force(
-    simulation.Particles[2], epsilon=1, alpha=1, r_cut=2.5)
+    simulation.Particles[2], epsilon=1, alpha=1)
 
 fig, ax = plt.subplots()
 sc = ax.scatter(

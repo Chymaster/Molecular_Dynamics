@@ -99,6 +99,21 @@ class Simulated_System:
         return r
     # Energy of each particle calculating
 
+    def p_diff_coord(self, t_particle, o_particle):
+        r = np.array([0., 0.])
+
+        r[0] = o_particle[0] - t_particle[0]
+        if abs(self.size - abs(o_particle[0] - t_particle[0])) < abs(r[0]):
+            r[0] = (self.size - abs(o_particle[0] - t_particle[0]))
+        r[1] = o_particle[1] - t_particle[1]
+        if abs(self.size - abs(o_particle[1] - t_particle[1])) < abs(r[1]):
+            r[1] = (self.size - abs(o_particle[1] - t_particle[1]))
+
+        if np.linalg.norm(r) > 2:
+            print("position before", t_particle, "position after", o_particle)
+        return r
+
+
     def update_force(self, target_particle, epsilon=1, alpha=0, r_cut=2.5):
 
         # Neighbour list updating
@@ -109,7 +124,7 @@ class Simulated_System:
                     target_particle.neighbour_list.append(other_particles)
                     """test""" """this is CHEATING!!!"""
                     # Making sure particles don't overlap
-                    while self.dist(target_particle, other_particles) <= 0.2:
+                    while self.dist(target_particle, other_particles) <= 0.4:
                         other_particles.position += (
                             other_particles.position - target_particle.position)
                     """test"""
@@ -142,7 +157,6 @@ class Simulated_System:
             return force_vector
 
         def calc_energy(neighbours):
-            change_in_position = self.p_diff(target_particle, neighbours)
             sigma = self.sigma
             r = self.dist(neighbours, target_particle)
             twelve_term = (sigma / r)**12
@@ -201,9 +215,7 @@ class Simulated_System:
                 particle.position_last + particle.force*(dt**2)/m
 
             particle.position = new_position
-            # Velocity change
-            particle.velocity = (particle.position
-                                 - particle.position_last) / (2*dt)
+
             """test"""
             """if np.linalg.norm(particle.velocity) > 10:
                 print("current position = ", particle.position)
@@ -223,6 +235,9 @@ class Simulated_System:
             while particle.position[1] > self.size:
                 particle.position[1] -= self.size
 
+            # Velocity change
+            particle.velocity = self.p_diff_coord(particle.position, particle.position_last)/ (2*dt)
+            
             # Update last position
             particle.position_last = current_position
 
@@ -244,7 +259,7 @@ class Simulated_System:
             self.T = self.kinetic_E / (self.N)
 
             # Logging
-            if log_file is not "" and int(self.t / self.dt) % int(1/f_log) == 0:
+            if log_file != "" and int(self.t / self.dt) % int(1/f_log) == 0:
                 log = open(log_file, "a")
                 log.write("".join(str(i)+" " for i in [self.t, self.T, self.kinetic_E,
                           self.potential_E, self.E, "\n"]))

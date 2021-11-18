@@ -6,7 +6,7 @@ from MD_System_Class import Simulated_System as md
 
 
 # Initialise MD system:
-simulation = md(lx=10, rho=0.3, sigma=0.5, T=5, dt=0.001)
+simulation = md(lx=20, rho=0.1, sigma=0.5, T=5, dt=0.001)
 
 # Calculate force for each particle instances
 simulation.update_force(
@@ -22,7 +22,6 @@ plt.ylim(0, simulation.size)
 def animate(i):
     simulation.move(m=1, log_file="log_test.txt", f_log=0.01)
     sc.set_offsets(np.array([i.position for i in simulation.Particles]))
-    print("done")
     return sc
 
 

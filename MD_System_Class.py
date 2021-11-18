@@ -263,7 +263,7 @@ class Simulated_System:
             # Logging
             if log_file != "" and int(self.t / self.dt) % int(1/f_log) == 0:
                 log = open(log_file, "a")
-                log.write("".join(str(i)+" " for i in [self.t, self.T, self.kinetic_E,
+                log.write(" ".join(str(i) for i in [self.t, self.T, self.kinetic_E,
                           self.potential_E, self.E, "\n"]))
                 log.close()
 

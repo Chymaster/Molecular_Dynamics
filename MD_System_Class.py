@@ -9,7 +9,7 @@ class Simulated_System:
 
         self.size = lx
 
-        self.t = 0
+        self.t = 0.
 
         self.dt = dt
 

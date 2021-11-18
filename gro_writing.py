@@ -16,11 +16,12 @@ def log_event(simulation):
     size = simulation.size
     n_particles = len(simulation.Particles)
     particle_properties = []
+    time = simulation.t
     for i in simulation.Particles:
-        particle_properties.append([str(i.position[0])[:5], str(i.position[1])[:5], "0", str(i.velocity[0])[:5], str(i.velocity[1])[:5], "0"])
-    log = open(file_name, "w")
-    log.write("MD of particles\n")
-    log.write(str(n_particles).rjust(20)+ "\n")
+        particle_properties.append([str(i.position[0])[:6], str(i.position[1])[:6], "0.0000", str(i.velocity[0])[:6], str(i.velocity[1])[:6], "0.0000"])
+    log = open(file_name, "a")
+    log.write("MD of particles,\n")
+    log.write(str(n_particles)[:].rjust(5))
     for i in range(len(particle_properties)):
         log.write(str(i).rjust(5))
         log.write("LJ".rjust(5))

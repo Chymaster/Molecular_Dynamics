@@ -59,7 +59,7 @@ name = "alpha0"
 plt.savefig(name+'.png')
 
 fig = plt.figure()
-plt.hist(velocity, density=True, bins=30)
+plt.hist(velocities, density=True, bins=30)
 plt.ylabel('Probability')
 plt.xlabel('Velocity')
 plt.savefig(name+"_velocity_hist.png")

@@ -128,7 +128,7 @@ class Simulated_System:
                     target_particle.neighbour_list.append(other_particles)
                     """test""" """this is CHEATING!!!"""
                     # Making sure particles don't overlap
-                    while self.dist(target_particle, other_particles) <= 1.0:
+                    while self.dist(target_particle, other_particles) <= 0.4:
                         other_particles.position += (
                             other_particles.position - target_particle.position)
                     """test"""

@@ -31,8 +31,8 @@ for i in range(N):
     simulation.move(m=1, alpha=alpha, log_file="", f_log=0.0001)
     if i == 100:
         velocities = np.array([np.linalg.norm(i.velocity) for i in simulation.Particles])
-        ms_velocity = np.mean(velocities**2)
-        D = ms_velocity/(4*simulation.dt)
+        ms_displacement = np.mean((velocities/simulation.dt)**2)
+        D = ms_displacement/(4*simulation.dt)
         output = open(name+".txt", "w")
         output.write("Diffusion coefficient at final stage is "+str(D)[:5])
         output.close()

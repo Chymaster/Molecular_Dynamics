@@ -65,4 +65,4 @@ plt.xlabel('Velocity')
 plt.savefig(name+"_velocity_hist.png")
 
 output = open(name+".txt", "w")
-output.write("Diffusion coefficient at final stage is"+str(D)[:5])
+output.write("Diffusion coefficient at final stage is "+str(D)[:5])

@@ -21,14 +21,14 @@ for i in range(N):
     kinetic_energy[i] = simulation.kinetic_E
     potential_energy[i] = simulation.potential_E
     total_energy[i] = simulation.E
-    simulation.move(m=1, alpha=0.5, log_file="", f_log=0.0001)
+    simulation.move(m=1, alpha=0, log_file="", f_log=0.0001)
     if simulation.kinetic_E > 3e5:
         print("T", simulation.T, "kinetic_energy", simulation.kinetic_E)
         print("potential_energy", simulation.potential_E, "total_energy", simulation.E)
         print(max([np.linalg.norm(i.velocity) for i in simulation.Particles]))
 
 velocities = np.array([np.linalg.norm(i.velocity) for i in simulation.Particles])
-ms_velocity = mean(velocities**2)
+ms_velocity = np.mean(velocities**2)
 D = ms_velocity/(4*simulation.dt)
 
 # Ploting Temperature, kinetic energy, potential energy and Total energy

@@ -34,7 +34,7 @@ for i in range(N):
         ms_displacement = np.mean((velocities/simulation.dt)**2)
         D = ms_displacement/(4*simulation.dt)
         output = open(name+".txt", "w")
-        output.write("Diffusion coefficient at final stage is "+str(D)[:5])
+        output.write("Diffusion coefficient at final stage is "+str(D))
         output.close()
 
 

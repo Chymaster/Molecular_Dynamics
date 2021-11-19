@@ -10,6 +10,7 @@ simulation = md(lx=20, rho=0.05, sigma=1, T=5, dt=0.001, r_cut=2.5)
 # Making N moves
 N = 10000
 
+
 temperature = np.zeros(N)
 kinetic_energy = np.zeros(N)
 potential_energy = np.zeros(N)
@@ -20,11 +21,15 @@ for i in range(N):
     kinetic_energy[i] = simulation.kinetic_E
     potential_energy[i] = simulation.potential_E
     total_energy[i] = simulation.E
-    simulation.move(m=1, alpha=1, log_file="", f_log=0.0001)
+    simulation.move(m=1, alpha=0.5, log_file="", f_log=0.0001)
     if simulation.kinetic_E > 3e5:
         print("T", simulation.T, "kinetic_energy", simulation.kinetic_E)
         print("potential_energy", simulation.potential_E, "total_energy", simulation.E)
         print(max([np.linalg.norm(i.velocity) for i in simulation.Particles]))
+
+velocities = np.array([np.linalg.norm(i.velocity) for i in simulation.Particles])
+ms_velocity = mean(velocities**2)
+D = ms_velocity/(4*simulation.dt)
 
 # Ploting Temperature, kinetic energy, potential energy and Total energy
 fig = plt.figure()
@@ -47,4 +52,17 @@ ax4.plot(total_energy)
 plt.tight_layout()
 
 #plt.show()
-plt.savefig('plot_remote.png')
+
+# Saving figures
+# Name of the parameter
+name = "alpha0"
+plt.savefig(name+'.png')
+
+fig = plt.figure()
+plt.hist(velocity, density=True, bins=30)
+plt.ylabel('Probability')
+plt.xlabel('Velocity')
+plt.savefig(name+"_velocity_hist.png")
+
+output = open(name+".txt", "w")
+output.write("Diffusion coefficient at final stage is"+str(D)[:5])

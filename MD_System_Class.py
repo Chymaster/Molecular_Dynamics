@@ -51,7 +51,7 @@ class Simulated_System:
         vx_average = np.average(velocities.T[0])
         vy_average = np.average(velocities.T[1])
         v_average_squared = np.average(np.reshape(velocities, -1)**2)
-        fs = np.sqrt(3*T/v_average_squared)
+        fs = np.sqrt(2*T/v_average_squared)
         for i in range(len(velocities)):
             velocities[i] = [(velocities[i][0]-vx_average)*fs,
                              (velocities[i][1]-vy_average)*fs]
@@ -111,8 +111,10 @@ class Simulated_System:
         if abs(self.size - abs(o_particle[1] - t_particle[1])) < abs(r[1]):
             r[1] = (self.size - abs(o_particle[1] - t_particle[1]))
 
-        if np.linalg.norm(r) > 2:
-            print("position before", t_particle, "position after", o_particle)
+        """test"""
+        """if np.linalg.norm(r) > 2:
+            print("position before", t_particle, "position after", o_particle)"""
+        """test"""
         return r
 
 
@@ -186,7 +188,7 @@ class Simulated_System:
             target_particle.force += calc_force(neighbours)
             target_particle.energy += calc_energy(neighbours)
 
-    def move(self, m=1, alpha=1, log_file="", f_log=0.0001):
+    def move(self, m=1, alpha=1, log_file="", f_log=1000):
         dt = self.dt
         for particle in self.Particles:
 
@@ -258,12 +260,12 @@ class Simulated_System:
 
             # Update Temperature
             kb = 1.38e-23
-            self.T = self.kinetic_E / (self.N)
+            self.T = 2 * self.kinetic_E / (self.N)
 
             # Logging
-            if log_file != "" and int(self.t / self.dt) % int(1/f_log) == 0:
+            if log_file != "" and int(self.t / self.dt) % int(f_log) == 0:
                 log = open(log_file, "a")
-                log.write(" ".join(str(i) for i in [self.t, self.T, self.kinetic_E,
+                log.write(" ".join(str(i)[:5] for i in [self.t, self.T, self.kinetic_E,
                           self.potential_E, self.E, "\n"]))
                 log.close()
 

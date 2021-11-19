@@ -1,1 +1,1 @@
-Diffusion coefficient at final stage is 13499
+Diffusion coefficient at final stage is 905016639.6282477

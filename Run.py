@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from MD_System_Class import Simulated_System as md
 
 # Name of the log files
-name = "alpha1"
+name = "dt001"
 # Alpha values
 alpha = 1
 # dt values
-delta_t = 0.001
+delta_t = 0.01
 
 
 # Initialise MD system:

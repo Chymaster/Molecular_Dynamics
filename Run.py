@@ -4,7 +4,7 @@ from MD_System_Class import Simulated_System as md
 
 
 # Initialise MD system:
-simulation = md(lx=20, rho=0.05, sigma=1, T=5, dt=0.01, r_cut=2.5)
+simulation = md(lx=20, rho=0.05, sigma=1, T=5, dt=0.001, r_cut=2.5)
 
 
 # Making N moves
@@ -22,6 +22,10 @@ for i in range(N):
     potential_energy[i] = simulation.potential_E
     total_energy[i] = simulation.E
     simulation.move(m=1, alpha=1, log_file="", f_log=0.0001)
+    if i == 100:
+        output = open(name+".txt", "w")
+        output.write("Diffusion coefficient at final stage is "+str(D)[:5])
+        output.close()
 
 velocities = np.array([np.linalg.norm(i.velocity) for i in simulation.Particles])
 ms_velocity = np.mean(velocities**2)
@@ -51,7 +55,7 @@ plt.tight_layout()
 
 # Saving figures
 # Name of the parameter
-name = "dt001"
+name = "dt0001"
 plt.savefig(name+'.png')
 
 fig = plt.figure()
@@ -59,6 +63,3 @@ plt.hist(velocities, density=True, bins=30)
 plt.ylabel('Probability')
 plt.xlabel('Velocity')
 plt.savefig(name+"_velocity_hist.png")
-
-output = open(name+".txt", "w")
-output.write("Diffusion coefficient at final stage is "+str(D)[:5])
